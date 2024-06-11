@@ -5,10 +5,11 @@ const SButton = styled.button`
     padding: 18px 8px;
     width: 100%;
     color: #ffffff;
-    background-color: #000000;
+    background-color: #3578ff;
     font-size: 18px;
     border: 0;
     border-radius:8px;
+    height: 50px;
 `;
 
 /**

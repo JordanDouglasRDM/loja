@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Cart from "./components/Cart.jsx";
 import Products from "./components/Products.jsx";
+import Total from "./components/Total.jsx";
 
 /**
-* Funcao para chamar API
-* @param {string} url caminho da função
-* @param {string} method metodo da função
-* @returns objeto de resposta
-*/
+ * Funcao para chamar API
+ * @param {string} url caminho da função
+ * @param {string} method metodo da função
+ * @returns objeto de resposta
+ */
 async function api(url, method, body = undefined) {
   return await fetch(`https://api-loja-fatec-af114027199e.herokuapp.com${url}`, {
     body: body !== undefined ? JSON.stringify(body) : body,
@@ -20,34 +21,31 @@ async function api(url, method, body = undefined) {
 }
 
 /**
-* busca todos os produtos da API
-* @returns lista de produtos
-*/
+ * busca todos os produtos da API
+ * @returns lista de produtos
+ */
 async function apiGetProducts() {
   const data = await api("/products", "GET");
   return data.products;
 }
 
 /**
-* Salva o carrinho de compras na API
-* @param {Object[]} products lista de produtos
-*/
-
+ * Salva o carrinho de compras na API
+ * @param {Object[]} products lista de produtos
+ */
 async function apiSubmitCart(products) {
   await api("/purchases", "POST", { products });
 }
 
 function App() {
-
   const [productsLoading, setProductsLoading] = useState(false); // status do loading de produtos
   const [products, setProducts] = useState([]); //Lista de Produtos
   const [cart, setCart] = useState([]); // lista de produtos no carrinho
   const [cartLoading, setCartLoading] = useState(false); // status do loading do carrinho
 
   /**
-  * busca os produtos
-  */
-
+   * busca os produtos
+   */
   async function getProducts() {
     setProductsLoading(true); //ativa loading de produtos
     setProducts(await apiGetProducts()); // salva a lista de produtos na variavel global
@@ -55,8 +53,8 @@ function App() {
   }
 
   /**
-  *salva o carrinho
-  */
+   * salva o carrinho
+   */
   async function submitCart() {
     setCartLoading(true); //ativa loading do carrinho
     await apiSubmitCart(cart); // salva o carrinho
@@ -66,8 +64,8 @@ function App() {
   }
 
   /**
-  * altera unidades do produto
-  */
+   * altera unidades do produto
+   */
   function setProduct(product, change) {
     const products = cart.filter(({ id }) => {
       return id !== product.id;
@@ -83,48 +81,67 @@ function App() {
   }
 
   /**
-  * adiciona produto no carrinho
-  */
+   * adiciona produto no carrinho
+   */
   function addProduct(product) {
     product.units = 1;
     setCart(() => [...cart, product]);
 
     setProducts(() =>
-      products.filter(({ id }) => {
-        return id !== product.id;
-      })
+        products.filter(({ id }) => {
+          return id !== product.id;
+        })
     );
+  }
+
+  /**
+   * calcula o total de itens no carrinho
+   */
+  function getTotalItems() {
+    return cart.reduce((total, product) => total + product.units, 0);
+  }
+
+  /**
+   * calcula o preço total no carrinho
+   */
+  function getTotalPrice() {
+    return cart.reduce((total, product) => total + product.units * product.price, 0);
   }
 
   useEffect(() => {
     getProducts(); //busca os produtos ao carregar a pagina
   }, []);
 
-
   /* elemento main personalizado com CSS */
-    const SMain = styled.main`
+  const SMain = styled.main`
     width: 100%;
-    height: 100vh;
+    height: 100%;
     display: grid;
-    grid-template-columns: 300px 1fr;
-    grid-template-rows: 1fr;
-    `;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto;
+  `;
 
-return (
-  <SMain>
-    <Cart
-      products={cart}
-      onChange={setProduct}
-      onClick={submitCart}
-      isLoading={cartLoading}
-    />
-    <Products
-      products={products}
-      onClick={addProduct}
-      isLoading={productsLoading}
-    />
-  </SMain>
+  const totalItems = getTotalItems();
+  const totalPrice = getTotalPrice();
+  return (
+      <SMain>
+        <Products
+            products={products}
+            onClick={addProduct}
+            isLoading={productsLoading}
+        />
+        <Cart
+            products={cart}
+            onChange={setProduct}
+            onClick={submitCart}
+            isLoading={cartLoading}
+        />
+        <Total
+            totalItems={totalItems}
+            totalPrice={totalPrice}
+        ></Total>
+      </SMain>
   );
 }
-export default App;
 
+export default App;

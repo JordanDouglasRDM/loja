@@ -2,21 +2,25 @@ import styled from "styled-components";
 import Button from "./Button.jsx";
 
 const SLi = styled.li`
-    margin-bottom: 10px;
     padding: 16px;
-    border-radius: 8px;
-    background: #dadada;
+    background: #ffffff;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: #eeeeee 1px solid;
 `;
 
 const SDivInfo = styled.div`
+    background-color: white;
+
     p {
+        background-color: white;
         font-size: 16px;
         margin-bottom: 2px;
     }
-    span{
+
+    span {
+        background-color: white;
         font-size: 16px;
         font-weight: bold;
     }
@@ -41,11 +45,15 @@ const SDivUnits = styled.div`
  * @param {Object} product Produto para listagem
  */
 function CartProduct ({product, onChange, isLoading}){
+    const truncatedName = product.name.length > 55 ? product.name.substring(0, 55) + '...' : product.name;
+    function formatPrice(price) {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
+    }
     return(
     <SLi>
         <SDivInfo>
-            <p>{product.name}</p>
-            <span>R${product.price}</span>
+            <p>{truncatedName}</p>
+            <span>{formatPrice(product.price)}</span>
         </SDivInfo>
         <SDivUnits>
             <button disabled={isLoading} onClick={() => onChange(product, -1)}>
@@ -59,21 +67,22 @@ function CartProduct ({product, onChange, isLoading}){
     </SLi>
     );
     }
-    
+
     /* elemento de lista personalizado com CSS */
     const SSection = styled.section`
-    padding: 20px;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 50px;
-    gap: 20px;
+        max-height: 600px !important;
+        padding: 20px;
+        display: grid;
+        gap: 20px;
     `;
 
     /* elemento de lista personalizado com CSS */
     const SUl = styled.ul`
     list-style-type: none;
+        max-height: 800px;
+        overflow-y: auto;
     `;
-    
+
     /**
     * componente para listagem de produtos no carrinho
     * @param {Object[]} products Produtos para listagem
@@ -83,6 +92,9 @@ function CartProduct ({product, onChange, isLoading}){
     function Cart({ products, onChange, onClick, isLoading = false }){
     return(
     <SSection>
+        <Button onClick={onClick} isLoading={isLoading}>
+            Finalizar Compra
+        </Button>
         <SUl>
             {products.map((product) => (
                 <CartProduct
@@ -93,11 +105,8 @@ function CartProduct ({product, onChange, isLoading}){
                 />
             ))}
         </SUl>
-        <Button onClick={onClick} isLoading={isLoading}>
-            Finalizar Compra
-        </Button>
     </SSection>
     );
     }
-    
+
 export default Cart;
