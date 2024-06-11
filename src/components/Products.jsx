@@ -40,6 +40,7 @@ return(
 	<SDivInfo>
 		<p>{product.name}</p>
 		<span>R${product.price}</span>
+		<span> - {product.units} unit</span>
 	</SDivInfo>
 </SDiv>
 );

@@ -10,7 +10,7 @@ import Products from "./components/Products.jsx";
 * @returns objeto de resposta
 */
 async function api(url, method, body = undefined) {
-  return await fetch(`http://localhost:4000${url}`, {
+  return await fetch(`https://api-loja-fatec-af114027199e.herokuapp.com${url}`, {
     body: body !== undefined ? JSON.stringify(body) : body,
     method: method,
     headers: {
